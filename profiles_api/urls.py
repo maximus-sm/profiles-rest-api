@@ -7,6 +7,14 @@ from profiles_api import views
 router = DefaultRouter()
 router.register('hello-viewset',views.HelloViewSet,basename='hello_viewset')
 
+# basename - The base to use for the URL names that are created.
+# If unset the basename will be automatically generated 
+# based on the queryset attribute of the viewset, if it has one. 
+# Note that if the viewset does not include a queryset attribute 
+# then you must set basename when registering the viewset.
+
+router.register('profile',views.UserProfileViewSet)
+
 urlpatterns = [
     path('hello-view/',views.HelloApiView.as_view()),
     path('',include(router.urls))
