@@ -5,6 +5,7 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.settings import api_settings
 from rest_framework import filters
+from rest_framework.permissions import IsAuthenticatedOrReadOnly,IsAuthenticated
 
 from rest_framework import status,viewsets
 
@@ -89,6 +90,7 @@ class HelloViewSet(viewsets.ViewSet):
 
 class UserProfileViewSet(viewsets.ModelViewSet):
     """Handle creating and updating user's profiles"""
+
     serializer_class = serializers.UserProfileSerializer
     queryset = models.UserProfile.objects.all()
     authentication_classes = (TokenAuthentication,)
@@ -99,5 +101,23 @@ class UserProfileViewSet(viewsets.ModelViewSet):
 
 class UserLoginApiView(ObtainAuthToken):
     """Handle creating user authentication tokens"""
+    #To show a login page on the django default site
     renderer_classes = api_settings.DEFAULT_RENDERER_CLASSES
-    
+
+
+class UserProfileFeedViewSet(viewsets.ModelViewSet):
+    """Handels creating , updating and reading a profile feed item"""
+    authentication_classes = (TokenAuthentication,)
+    serializer_class = serializers.ProfileFeedItemSerializer
+    queryset = models.ProfileFeedItem.objects.all()
+    permission_classes = (
+        permissions.UpdateOwnStatus,
+        IsAuthenticated
+    )
+
+    #Since the user_profile field is a read only field and 
+    #cannot be passed to the request directly , we need to pass
+    #a currently autheticated user or anonymus user. (via auth_classes)
+    def perform_create(self,serializer):
+        """Sets the user profile to the logged in user"""
+        serializer.save(user_profile=self.request.user)

@@ -14,6 +14,7 @@ router.register('hello-viewset',views.HelloViewSet,basename='hello_viewset')
 # then you must set basename when registering the viewset.
 
 router.register('profile',views.UserProfileViewSet)
+router.register('feed',views.UserProfileFeedViewSet)
 
 urlpatterns = [
     path('hello-view/',views.HelloApiView.as_view()),
